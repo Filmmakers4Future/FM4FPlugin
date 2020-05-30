@@ -1072,9 +1072,10 @@
           foreach ($videos as $video) {
             if (array_key_exists("category", $video) && array_key_exists("hoster", $video) &&
                 array_key_exists("language", $video) && array_key_exists("name", $video) &&
-                array_key_exists("thumb", $video) && array_key_exists("url", $video)) {
+                array_key_exists("thumb", $video) && array_key_exists("url", $video) &&
+                array_key_exists("class", $video)) {
               $result .= tfhtml(NL.
-                                "<div class=\"col-lg-4 col-sm-6\">".NL.
+                                "<div class=\"%s\">".NL.
                                 "  <a class=\"video_grid-box\" href=\"%s\">".NL.
                                 "    <img class=\"img-fluid\" src=\"%s\" alt=\"%s %s\">".NL.
                                 "    <div class=\"video_grid-box-caption\">".NL.
@@ -1086,6 +1087,7 @@
                                 "  </a>".NL.
                                 "</div>".NL,
                                 FM4FPlugin::class,
+                                $video["class"],
                                 $video["url"],
                                 $video["thumb"],
                                 "Preview image for Video:",

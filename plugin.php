@@ -75,7 +75,7 @@
 
       // defines the contents of the mail that is sent to the admin DURING verification
       Plugins::preset("ADMIN_VERIFY_MAIL_BODY",    file_get_contents(USER_CONFIG_PATH."templates/admin_verify.txt"));
-      Plugins::preset("ADMIN_VERIFY_MAIL_SUBJECT", "Please verify this user registration");
+      Plugins::preset("ADMIN_VERIFY_MAIL_SUBJECT", "Verify signature - {%NAME}");
 
       // defines the contents of the mail that is sent to the admin when the contact form is used
       Plugins::preset("CONTACT_MAIL_BODY",    file_get_contents(USER_CONFIG_PATH."templates/contact.txt"));

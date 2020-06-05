@@ -527,10 +527,15 @@
           $html .= tfhtml("    <b>%s</b><br>".NL.
                           "    %s<br>".NL.
                           "    %s".NL,
+                          "    %s <a href=\"%s\">%s</a> %s".NL,
                           FM4FPlugin::class,
                           "Thank you for signing the statement.",
                           "We will send you an e-mail with further instructions.",
-                          "Please check your spam folder, just in case.");
+                          "Please check your spam folder, just in case.",
+                          "You can also",
+                          "invite",
+                          "/invite",
+                          "your colleagues!");
         } else {
           // generate HTML source code
           $html .= tfhtml("    <b>%s%s</b><br>".NL,

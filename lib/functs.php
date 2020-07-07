@@ -1245,11 +1245,11 @@
                   if ((0 < strlen($info["country"])) && (0 < strlen($info["job"])) && (0 < strlen($info["mail"])) &&
                       (0 < strlen($info["name"]))) {
                     if ($statement = mysqli_prepare($link, "UPDATE data SET name=?,mail=?,job=?,country=?,city=?,".
-                                                    "website=?,industry_references=?,iscompany=?,admin_verify_token=NULL WHERE ".
+                                                    "website=?,industry_references=NULL,iscompany=?,admin_verify_token=NULL WHERE ".
                                                     "disabled IS FALSE AND uid=? AND admin_verify_token=?")) {
                       try {
-                        if (mysqli_stmt_bind_param($statement, "sssssssiss", $info["name"], $info["mail"], $info["job"],
-                                                   $info["country"], $info["city"], $info["website"], $info["references"],
+                        if (mysqli_stmt_bind_param($statement, "ssssssiss", $info["name"], $info["mail"], $info["job"],
+                                                   $info["country"], $info["city"], $info["website"],
                                                    $info["iscompany"], $info["uid"], $info["admin"])) {
                           if (mysqli_stmt_execute($statement)) {
                             $updated = (1 === mysqli_affected_rows($link));

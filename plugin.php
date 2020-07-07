@@ -457,18 +457,23 @@
                        "  <input type=\"email\" name=\"mail\" maxlength=\"256\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
                        "  <!-- Job -->".NL.
                        "  <input type=\"text\" name=\"job\" maxlength=\"256\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
+                       "  <!-- Website -->".NL.
+                       "  <input type=\"link\" name=\"website\" maxlength=\"256\" placeholder=\"%s\" class=\"form-control mb-4\">".NL.
                        "  <!-- Country -->".NL.
                        "  <input type=\"text\" name=\"country\" maxlength=\"256\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
                        "  <!-- City -->".NL.
                        "  <input type=\"text\" name=\"city\" maxlength=\"256\" placeholder=\"%s\" class=\"form-control mb-4\">".NL.
-                       "  <!-- Website -->".NL.
-                       "  <input type=\"link\" name=\"website\" maxlength=\"256\" placeholder=\"%s\" class=\"form-control mb-4\">".NL.
                        "  <!-- Individual or Company -->".NL.
                        "  <select name=\"iscompany\" class=\"browser-default custom-select mb-4\" required>".NL.
                        "    <option value=\"\" disabled selected>%s</option>".NL.
                        "    <option value=\"0\">%s</option>".NL.
                        "    <option value=\"1\">%s</option>".NL.
                        "  </select>".NL.
+                       "  <!-- Reference -->".NL.
+                       "  <label class=\"mb-1\">%s</label>".NL.
+                       "  <div class=\"form-group\">".NL.
+                       "  <textarea name=\"references\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\"></textarea>".NL.
+                       "  </div>".NL.
                        "  <!-- Newsletter -->".NL.
                        "  <label class=\"mb-1\">%s</label>".NL.
                        "  <select name=\"newsletter\" class=\"browser-default custom-select mb-4\" required>".NL.
@@ -489,12 +494,14 @@
                        "Full name or company name*",
                        "Email address*",
                        "Job title or company field*",
+                       "Website | Filmography",
                        "Country*",
                        "City",
-                       "Website | Filmography",
                        "Individual or organisation?",
                        "Individual",
                        "Organisation / Company",
+                       "Help us verify your signature",
+                       "If the submitted information does not already show it, please give us some hints on your connection to the film and television industry.",
                        "Do you want to stay in touch?",
                        "Choose option...",
                        "No updates please.",
@@ -879,6 +886,11 @@
                            "    <option value=\"0\" %s>%s</option>".NL.
                            "    <option value=\"1\" %s>%s</option>".NL.
                            "  </select>".NL.
+                           "  <!-- Reference -->".NL.
+                           "  <label class=\"mb-1\">%s</label>".NL.
+                           "  <div class=\"form-group\">".NL.
+                           "  <textarea name=\"references\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\" %s>%s</textarea>".NL.
+                           "  </div>".NL.
                            "  <!-- Newsletter -->".NL.
                            "  <label class=\"mb-1\">%s</label>".NL.
                            "  <select name=\"newsletter\" class=\"browser-default custom-select mb-4\" required %s>".NL.
@@ -908,6 +920,10 @@
                            "Individual",
                            ($output[MAIL_ISCOMPANY]) ? "selected" : "",
                            "Company",
+                           "Help us verify your signature",
+                           "If the submitted information does not already show it, please give us some hints on your connection to the film and television industry.",
+                           ($isadmin) ? "disabled readonly" : "",
+                           $output[MAIL_REFERENCES],
                            "Do you want to stay in touch?",
                            ($isadmin) ? "disabled readonly" : "",
                            ($output[MAIL_NEWSLETTER]) ? "" : "selected",

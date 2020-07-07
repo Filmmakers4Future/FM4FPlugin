@@ -572,17 +572,18 @@
             $name       = null;
             $newsletter = null;
             $website    = null;
+            $references = null;
 
             $selected = null;
             if (0 < strlen($info["admin"])) { // verify admin token
-              if ($statement = mysqli_prepare($link, "SELECT city,country,iscompany,job,mail,name,newsletter,website".
+              if ($statement = mysqli_prepare($link, "SELECT city,country,iscompany,job,mail,name,newsletter,website,industry_references".
                                               " FROM data WHERE disabled IS FALSE AND uid=? AND ".
                                               "admin_verify_token=?")) {
                 try {
                   if (mysqli_stmt_bind_param($statement, "ss", $info["uid"], $info["admin"])) {
                     if (mysqli_stmt_execute($statement)) {
                       if (mysqli_stmt_bind_result($statement, $city, $country, $iscompany, $job, $mail, $name,
-                                                  $newsletter, $website)) {
+                                                  $newsletter, $website, $references)) {
                         if (mysqli_stmt_fetch($statement)) {
                           $selected = true;
                         } else {
@@ -614,13 +615,13 @@
                 }
               }
             } elseif (0 < strlen($info["user"])) { // verify user token
-              if ($statement = mysqli_prepare($link, "SELECT city,country,iscompany,job,mail,name,newsletter,website".
+              if ($statement = mysqli_prepare($link, "SELECT city,country,iscompany,job,mail,name,newsletter,website,industry_references".
                                               " FROM data WHERE disabled IS FALSE AND uid=? AND user_verify_token=?")) {
                 try {
                   if (mysqli_stmt_bind_param($statement, "ss", $info["uid"], $info["user"])) {
                     if (mysqli_stmt_execute($statement)) {
                       if (mysqli_stmt_bind_result($statement, $city, $country, $iscompany, $job, $mail, $name,
-                                                  $newsletter, $website)) {
+                                                  $newsletter, $website, $references)) {
                         if (mysqli_stmt_fetch($statement)) {
                           $selected = true;
                         } else {
@@ -665,7 +666,8 @@
                          MAIL_MAIL       => $mail,
                          MAIL_NAME       => $name,
                          MAIL_NEWSLETTER => $newsletter,
-                         MAIL_WEBSITE    => $website];
+                         MAIL_WEBSITE    => $website,
+                         MAIL_REFERENCES => $references];
             }
           } finally {
             mysqli_close($link);
@@ -709,6 +711,7 @@
         $info["mail"]    = strtolower(trim(get_element($info, "mail")));
         $info["name"]    = trim(get_element($info, "name"));
         $info["website"] = trim(get_element($info, "website"));
+        $info["references"] = trim(get_element($info, "references"));
 
         // normalize iscompany
         if ("1" === get_element($info, "iscompany")) {
@@ -795,14 +798,14 @@
 
                 $inserted = null;
                 if ($statement = mysqli_prepare($link, "INSERT IGNORE INTO data (uid,name,mail,job,country,city,".
-                                                "website,iscompany,newsletter,disabled,admin_verify_token,".
+                                                "website,industry_references,iscompany,newsletter,disabled,admin_verify_token,".
                                                 "user_newsletter_token,user_verify_token) VALUES ".
-                                                "(?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                                                "(?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
                   try {
-                    if (mysqli_stmt_bind_param($statement, "sssssssiiisss", $uid, $info["name"], $info["mail"],
-                                               $info["job"], $info["country"], $info["city"], $info["website"],
-                                               $info["iscompany"], $info["newsletter"], $disabled, $admin_verify_token,
-                                               $user_newsletter_token, $user_verify_token)) {
+                    if (mysqli_stmt_bind_param($statement, "ssssssssiiisss", $uid, $info["name"], $info["mail"],
+                                               $info["job"], $info["country"], $info["city"], $info["website"], 
+                                               $info["references"], $info["iscompany"], $info["newsletter"], $disabled, 
+                                               $admin_verify_token, $user_newsletter_token, $user_verify_token)) {
                       if (mysqli_stmt_execute($statement)) {
                         $inserted = (1 === mysqli_affected_rows($link));
 
@@ -1150,6 +1153,7 @@
         $info["uid"]     = strtolower(trim(get_element($info, "uid")));
         $info["user"]    = strtolower(trim(get_element($info, "user")));
         $info["website"] = trim(get_element($info, "website"));
+        $info["references"] = trim(get_element($info, "references"));
 
         // normalize iscompany
         if ("1" === get_element($info, "iscompany")) {
@@ -1190,18 +1194,19 @@
               $user_newsletter_token = null;
               $user_verify_token     = null;
               $website               = null;
+              $references            = null;
 
               $selected = null;
               if (0 < strlen($info["newmail"])) { // send verification mail to user
                 if ($statement = mysqli_prepare($link, "SELECT admin_verify_token,city,country,iscompany,job,mail,".
-                                                "name,newsletter,uid,user_newsletter_token,user_verify_token,website".
+                                                "name,newsletter,uid,user_newsletter_token,user_verify_token,website,industry_references".
                                                 " FROM data WHERE user_verify_token IS NOT NULL AND mail=?")) {
                   try {
                     if (mysqli_stmt_bind_param($statement, "s", $info["newmail"])) {
                       if (mysqli_stmt_execute($statement)) {
                         if (mysqli_stmt_bind_result($statement, $admin_verify_token, $city, $country, $iscompany, $job,
                                                     $mail, $name, $newsletter, $uid, $user_newsletter_token,
-                                                    $user_verify_token, $website)) {
+                                                    $user_verify_token, $website, $references)) {
                           if (mysqli_stmt_fetch($statement)) {
                             $selected = true;
                           } else {
@@ -1240,11 +1245,11 @@
                   if ((0 < strlen($info["country"])) && (0 < strlen($info["job"])) && (0 < strlen($info["mail"])) &&
                       (0 < strlen($info["name"]))) {
                     if ($statement = mysqli_prepare($link, "UPDATE data SET name=?,mail=?,job=?,country=?,city=?,".
-                                                    "website=?,iscompany=?,admin_verify_token=NULL WHERE ".
+                                                    "website=?,industry_references=?,iscompany=?,admin_verify_token=NULL WHERE ".
                                                     "disabled IS FALSE AND uid=? AND admin_verify_token=?")) {
                       try {
-                        if (mysqli_stmt_bind_param($statement, "ssssssiss", $info["name"], $info["mail"], $info["job"],
-                                                   $info["country"], $info["city"], $info["website"],
+                        if (mysqli_stmt_bind_param($statement, "sssssssiss", $info["name"], $info["mail"], $info["job"],
+                                                   $info["country"], $info["city"], $info["website"], $info["references"],
                                                    $info["iscompany"], $info["uid"], $info["admin"])) {
                           if (mysqli_stmt_execute($statement)) {
                             $updated = (1 === mysqli_affected_rows($link));
@@ -1281,13 +1286,13 @@
                   // check if the updatable parameters fulfil minimal requirements
                   if ((0 < strlen($info["country"])) && (0 < strlen($info["job"])) && (0 < strlen($info["name"]))) {
                     if ($statement = mysqli_prepare($link, "UPDATE data SET name=?,job=?,country=?,city=?,website=?,".
-                                                    "iscompany=?,newsletter=?,user_verify_token=NULL WHERE ".
+                                                    "industry_references=?,iscompany=?,newsletter=?,user_verify_token=NULL WHERE ".
                                                     "disabled IS FALSE AND uid=? AND user_verify_token=?")) {
                       try {
-                        if (mysqli_stmt_bind_param($statement, "sssssiiss", $info["name"], $info["job"],
+                        if (mysqli_stmt_bind_param($statement, "ssssssiiss", $info["name"], $info["job"],
                                                    $info["country"], $info["city"], $info["website"],
-                                                   $info["iscompany"], $info["newsletter"], $info["uid"],
-                                                   $info["user"])) {
+                                                   $info["references"], $info["iscompany"], $info["newsletter"], 
+                                                   $info["uid"], $info["user"])) {
                           if (mysqli_stmt_execute($statement)) {
                             $updated = (1 === mysqli_affected_rows($link));
 
@@ -1327,14 +1332,14 @@
 
                 if ($updated) {
                   if ($statement = mysqli_prepare($link, "SELECT admin_verify_token,city,country,iscompany,job,mail,".
-                                                  "name,newsletter,uid,user_newsletter_token,user_verify_token,website".
+                                                  "name,newsletter,uid,user_newsletter_token,user_verify_token,website,industry_references".
                                                   " FROM data WHERE disabled IS FALSE AND uid=?")) {
                     try {
                       if (mysqli_stmt_bind_param($statement, "s", $info["uid"])) {
                         if (mysqli_stmt_execute($statement)) {
                           if (mysqli_stmt_bind_result($statement, $admin_verify_token, $city, $country, $iscompany,
                                                       $job, $mail, $name, $newsletter, $uid, $user_newsletter_token,
-                                                      $user_verify_token, $website)) {
+                                                      $user_verify_token, $website, $references)) {
                             if (mysqli_stmt_fetch($statement)) {
                               $selected = true;
                             } else {
@@ -1400,7 +1405,8 @@
                                         MAIL_UID                   => $uid,
                                         MAIL_USER_NEWSLETTER_TOKEN => $user_newsletter_token,
                                         MAIL_USER_VERIFY_TOKEN     => $user_verify_token,
-                                        MAIL_WEBSITE               => $website],
+                                        MAIL_WEBSITE               => $website,
+                                        MAIL_REFERENCES            => $references],
                                        (ADMIN_MAIL === $recipient) ? $name.SP."<".$mail.">" : null, $senderror);
 
                 if (!$result) {

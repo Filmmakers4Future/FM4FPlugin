@@ -49,7 +49,7 @@
                                     MAIL_MESSAGE => $info["message"],
                                     MAIL_NAME    => $info["name"],
                                     MAIL_SUBJECT => $subject],
-                                   $info["mail"], $senderror);
+                                   $info["name"].SP."<".$info["mail"].">", $senderror);
 
             if (!$result) {
               if (is_array($error)) {
@@ -1401,7 +1401,7 @@
                                         MAIL_USER_NEWSLETTER_TOKEN => $user_newsletter_token,
                                         MAIL_USER_VERIFY_TOKEN     => $user_verify_token,
                                         MAIL_WEBSITE               => $website],
-                                       (ADMIN_MAIL === $recipient) ? $mail : null, $senderror);
+                                       (ADMIN_MAIL === $recipient) ? $name.SP."<".$mail.">" : null, $senderror);
 
                 if (!$result) {
                   if (is_array($error)) {

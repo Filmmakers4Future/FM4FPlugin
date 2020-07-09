@@ -472,7 +472,7 @@
                        "  <!-- Reference -->".NL.
                        "  <label class=\"mb-1\">%s</label>".NL.
                        "  <div class=\"form-group\">".NL.
-                       "  <textarea name=\"references\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\"></textarea>".NL.
+                       "  <textarea name=\"references\" maxlength=\"1000\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\"></textarea>".NL.
                        "  </div>".NL.
                        "  <!-- Newsletter -->".NL.
                        "  <label class=\"mb-1\">%s</label>".NL.
@@ -889,7 +889,7 @@
                            "  <!-- Reference -->".NL.
                            "  <label class=\"mb-1\">%s</label>".NL.
                            "  <div class=\"form-group\">".NL.
-                           "  <textarea name=\"references\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\" %s>%s</textarea>".NL.
+                           "  <textarea name=\"references\" maxlength=\"1000\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\" %s>%s</textarea>".NL.
                            "  </div>".NL.
                            "  <!-- Newsletter -->".NL.
                            "  <label class=\"mb-1\">%s</label>".NL.

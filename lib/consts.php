@@ -24,6 +24,7 @@
   define("MAIL_USER_NEWSLETTER_TOKEN", "{%USER_NEWSLETTER_TOKEN}");
   define("MAIL_USER_VERIFY_TOKEN",     "{%USER_VERIFY_TOKEN}");
   define("MAIL_WEBSITE",               "{%WEBSITE}");
+  define("MAIL_VERIFY_HINTS",          "{%VERIFY_HINTS}");
 
   define("MAILGUN_BATCH_SIZE", 1000);
 

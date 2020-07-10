@@ -472,7 +472,7 @@
                        "  <!-- Reference -->".NL.
                        "  <label class=\"mb-1\">%s</label>".NL.
                        "  <div class=\"form-group\">".NL.
-                       "  <textarea name=\"references\" maxlength=\"1000\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\"></textarea>".NL.
+                       "  <textarea name=\"verify_hints\" maxlength=\"1000\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\"></textarea>".NL.
                        "  </div>".NL.
                        "  <!-- Newsletter -->".NL.
                        "  <label class=\"mb-1\">%s</label>".NL.
@@ -889,7 +889,7 @@
                            "  <!-- Reference -->".NL.
                            "  <label class=\"mb-1\">%s</label>".NL.
                            "  <div class=\"form-group\">".NL.
-                           "  <textarea name=\"references\" maxlength=\"1000\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\" %s>%s</textarea>".NL.
+                           "  <textarea name=\"verify_hints\" maxlength=\"1000\" rows=\"3\" placeholder=\"%s\" class=\"form-control mb-4\" %s>%s</textarea>".NL.
                            "  </div>".NL.
                            "  <!-- Newsletter -->".NL.
                            "  <label class=\"mb-1\">%s</label>".NL.
@@ -923,7 +923,7 @@
                            "Help us verify your signature",
                            "If the submitted information does not already show it, please give us some hints on your connection to the film and television industry.",
                            ($isadmin) ? "disabled readonly" : "",
-                           $output[MAIL_REFERENCES],
+                           $output[MAIL_VERIFY_HINTS],
                            "Do you want to stay in touch?",
                            ($isadmin) ? "disabled readonly" : "",
                            ($output[MAIL_NEWSLETTER]) ? "" : "selected",

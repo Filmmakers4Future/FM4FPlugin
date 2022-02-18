@@ -11,7 +11,7 @@
     return $result;
   }
   
-  function getCaptcha() {
+  function get_captcha() {
       session_set_cookie_params(3600); 
       ini_set('session.gc_maxlifetime', 3600);
       session_start();
@@ -25,7 +25,7 @@
       return "What is " . $captcha_1 . " + " . $captcha_2 . "?";
   }
   
-  function checkCaptcha($answer) {
+  function check_captcha($answer) {
     
     session_start();
     $captcha_1 = openssl_decrypt($_SESSION["captcha_number_1"], "AES-128-ECB", CAPTCHA_COOKIE_KEY);
@@ -66,7 +66,7 @@
 
         // check if the given parameters fulfil minimal requirements
         if ((0 < strlen($info["mail"])) && (0 < strlen($info["message"])) && (0 < strlen($info["name"]))) {
-            if (checkCaptcha($info["captcha"]) && strlen($info["mail_message"]) == 0) {
+            if (check_captcha($info["captcha"]) && strlen($info["mail_message"]) == 0) {
           // retrieve subject and recipient from subject parameter
           $recipient = null;
           $subject   = null;
@@ -784,135 +784,141 @@
         // check if the given parameters fulfil minimal requirements
         if ((0 < strlen($info["country"])) && (0 < strlen($info["job"])) && (0 < strlen($info["mail"])) &&
             (0 < strlen($info["name"]))) {
-            if (checkCaptcha($info["captcha"]) && strlen($info["mail_message"]) == 0) {
-          // connect to the database
-          if ($link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)) {
-            try {
-              // we will grab some information
-              $count = null;
+            if (check_captcha($info["captcha"]) && strlen($info["mail_message"]) == 0) {
+                if (strpos($info["name"], "http") == false) {
+                      // connect to the database
+                      if ($link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)) {
+                        try {
+                          // we will grab some information
+                          $count = null;
 
-              $proceed = null;
-              if ($statement = mysqli_prepare($link, "SELECT COUNT(*) FROM data WHERE mail=?")) {
-                try {
-                  if (mysqli_stmt_bind_param($statement, "s", $info["mail"])) {
-                    if (mysqli_stmt_execute($statement)) {
-                      if (mysqli_stmt_bind_result($statement, $count)) {
-                        if (mysqli_stmt_fetch($statement)) {
-                          $proceed = (0 === $count);
+                          $proceed = null;
+                          if ($statement = mysqli_prepare($link, "SELECT COUNT(*) FROM data WHERE mail=?")) {
+                            try {
+                              if (mysqli_stmt_bind_param($statement, "s", $info["mail"])) {
+                                if (mysqli_stmt_execute($statement)) {
+                                  if (mysqli_stmt_bind_result($statement, $count)) {
+                                    if (mysqli_stmt_fetch($statement)) {
+                                      $proceed = (0 === $count);
 
-                          if (!$proceed) {
+                                      if (!$proceed) {
+                                        if (is_array($error)) {
+                                          $error[ERROR_MESSAGE] = ERRORS_REGISTER;
+                                          $error[ERROR_OUTPUT]  = ERRORS_REGISTER;
+                                        }
+                                      }
+                                    } else {
+                                      if (is_array($error)) {
+                                        $error[ERROR_MESSAGE] = "select statement result could not be fetched";
+                                      }
+                                    }
+                                  } else {
+                                    if (is_array($error)) {
+                                      $error[ERROR_MESSAGE] = "select statement result could not be bound";
+                                    }
+                                  }
+                                } else {
+                                  if (is_array($error)) {
+                                    $error[ERROR_MESSAGE] = "select statement could not be executed";
+                                  }
+                                }
+                              } else {
+                                if (is_array($error)) {
+                                  $error[ERROR_MESSAGE] = "select statement parameters could not be bound";
+                                }
+                              }
+                            } finally {
+                              mysqli_stmt_close($statement);
+                            }
+                          } else {
                             if (is_array($error)) {
-                              $error[ERROR_MESSAGE] = ERRORS_REGISTER;
-                              $error[ERROR_OUTPUT]  = ERRORS_REGISTER;
+                              $error[ERROR_MESSAGE] = "select statement could not be prepared";
                             }
                           }
-                        } else {
-                          if (is_array($error)) {
-                            $error[ERROR_MESSAGE] = "select statement result could not be fetched";
+
+                          $inserted = null;
+                          if ($proceed) {
+                            // generate new tokens
+                            $admin_verify_token    = generate_token();
+                            $disabled              = false;
+                            $uid                   = generate_token();
+                            $user_verify_token     = generate_token();
+                            $user_newsletter_token = generate_token();
+
+                            $inserted = null;
+                            if ($statement = mysqli_prepare($link, "INSERT IGNORE INTO data (uid,name,mail,job,country,city,".
+                                                            "website,verify_hints,iscompany,newsletter,disabled,admin_verify_token,".
+                                                            "user_newsletter_token,user_verify_token) VALUES ".
+                                                            "(?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                              try {
+                                if (mysqli_stmt_bind_param($statement, "ssssssssiiisss", $uid, $info["name"], $info["mail"],
+                                                           $info["job"], $info["country"], $info["city"], $info["website"],
+                                                           $info["verify_hints"], $info["iscompany"], $info["newsletter"], $disabled,
+                                                           $admin_verify_token, $user_newsletter_token, $user_verify_token)) {
+                                  if (mysqli_stmt_execute($statement)) {
+                                    $inserted = (1 === mysqli_affected_rows($link));
+
+                                    if (!$inserted) {
+                                      if (is_array($error)) {
+                                        $error[ERROR_MESSAGE] = "insert statement did not affect the required number of rows";
+                                      }
+                                    }
+                                  } else {
+                                    if (is_array($error)) {
+                                      $error[ERROR_MESSAGE] = "insert statement could not be executed";
+                                    }
+                                  }
+                                } else {
+                                  if (is_array($error)) {
+                                    $error[ERROR_MESSAGE] = "insert statement parameters could not be bound";
+                                  }
+                                }
+                              } finally {
+                                mysqli_stmt_close($statement);
+                              }
+                            } else {
+                              if (is_array($error)) {
+                                $error[ERROR_MESSAGE] = "insert statement could not be prepared";
+                              }
+                            }
                           }
+
+                          if ($inserted) {
+                            // send verification mail to user
+                            $senderror = [];
+                            $result    = send_mail($info["mail"], USER_VERIFY_MAIL_SUBJECT, USER_VERIFY_MAIL_BODY,
+                                                   [MAIL_ADMIN_VERIFY_TOKEN    => $admin_verify_token,
+                                                    MAIL_CITY                  => $info["city"],
+                                                    MAIL_COUNTRY               => $info["country"],
+                                                    MAIL_ISCOMPANY             => ($info["iscompany"]) ? "yes" : "no",
+                                                    MAIL_JOB                   => $info["job"],
+                                                    MAIL_MAIL                  => $info["mail"],
+                                                    MAIL_NAME                  => $info["name"],
+                                                    MAIL_NEWSLETTER            => ($info["newsletter"]) ? "yes" : "no",
+                                                    MAIL_UID                   => $uid,
+                                                    MAIL_USER_NEWSLETTER_TOKEN => $user_newsletter_token,
+                                                    MAIL_USER_VERIFY_TOKEN     => $user_verify_token,
+                                                    MAIL_WEBSITE               => $info["website"]],
+                                                   null, $senderror);
+
+                            if (!$result) {
+                              if (is_array($error)) {
+                                $error[ERROR_MESSAGE] = "mail could not be sent";
+                                $error["senderror"]   = $senderror;
+                              }
+                            }
+                          }
+                        } finally {
+                          mysqli_close($link);
                         }
                       } else {
-                        if (is_array($error)) {
-                          $error[ERROR_MESSAGE] = "select statement result could not be bound";
-                        }
-                      }
-                    } else {
-                      if (is_array($error)) {
-                        $error[ERROR_MESSAGE] = "select statement could not be executed";
-                      }
-                    }
-                  } else {
-                    if (is_array($error)) {
-                      $error[ERROR_MESSAGE] = "select statement parameters could not be bound";
-                    }
-                  }
-                } finally {
-                  mysqli_stmt_close($statement);
-                }
-              } else {
-                if (is_array($error)) {
-                  $error[ERROR_MESSAGE] = "select statement could not be prepared";
-                }
-              }
-
-              $inserted = null;
-              if ($proceed) {
-                // generate new tokens
-                $admin_verify_token    = generate_token();
-                $disabled              = false;
-                $uid                   = generate_token();
-                $user_verify_token     = generate_token();
-                $user_newsletter_token = generate_token();
-
-                $inserted = null;
-                if ($statement = mysqli_prepare($link, "INSERT IGNORE INTO data (uid,name,mail,job,country,city,".
-                                                "website,verify_hints,iscompany,newsletter,disabled,admin_verify_token,".
-                                                "user_newsletter_token,user_verify_token) VALUES ".
-                                                "(?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
-                  try {
-                    if (mysqli_stmt_bind_param($statement, "ssssssssiiisss", $uid, $info["name"], $info["mail"],
-                                               $info["job"], $info["country"], $info["city"], $info["website"], 
-                                               $info["verify_hints"], $info["iscompany"], $info["newsletter"], $disabled, 
-                                               $admin_verify_token, $user_newsletter_token, $user_verify_token)) {
-                      if (mysqli_stmt_execute($statement)) {
-                        $inserted = (1 === mysqli_affected_rows($link));
-
-                        if (!$inserted) {
-                          if (is_array($error)) {
-                            $error[ERROR_MESSAGE] = "insert statement did not affect the required number of rows";
-                          }
-                        }
-                      } else {
-                        if (is_array($error)) {
-                          $error[ERROR_MESSAGE] = "insert statement could not be executed";
-                        }
-                      }
-                    } else {
-                      if (is_array($error)) {
-                        $error[ERROR_MESSAGE] = "insert statement parameters could not be bound";
-                      }
-                    }
-                  } finally {
-                    mysqli_stmt_close($statement);
-                  }
-                } else {
-                  if (is_array($error)) {
-                    $error[ERROR_MESSAGE] = "insert statement could not be prepared";
-                  }
-                }
-              }
-
-              if ($inserted) {
-                // send verification mail to user
-                $senderror = [];
-                $result    = send_mail($info["mail"], USER_VERIFY_MAIL_SUBJECT, USER_VERIFY_MAIL_BODY,
-                                       [MAIL_ADMIN_VERIFY_TOKEN    => $admin_verify_token,
-                                        MAIL_CITY                  => $info["city"],
-                                        MAIL_COUNTRY               => $info["country"],
-                                        MAIL_ISCOMPANY             => ($info["iscompany"]) ? "yes" : "no",
-                                        MAIL_JOB                   => $info["job"],
-                                        MAIL_MAIL                  => $info["mail"],
-                                        MAIL_NAME                  => $info["name"],
-                                        MAIL_NEWSLETTER            => ($info["newsletter"]) ? "yes" : "no",
-                                        MAIL_UID                   => $uid,
-                                        MAIL_USER_NEWSLETTER_TOKEN => $user_newsletter_token,
-                                        MAIL_USER_VERIFY_TOKEN     => $user_verify_token,
-                                        MAIL_WEBSITE               => $info["website"]],
-                                       null, $senderror);
-
-                if (!$result) {
-                  if (is_array($error)) {
-                    $error[ERROR_MESSAGE] = "mail could not be sent";
-                    $error["senderror"]   = $senderror;
-                  }
-                }
-              }
-            } finally {
-              mysqli_close($link);
-            }
-          } else {
             if (is_array($error)) {
               $error[ERROR_MESSAGE] = "database connection could not be established";
+            }
+          }
+        } else {
+            if (is_array($error)) {
+                $error[ERROR_MESSAGE] = "Name field contains a link - probably spam.";
             }
           }
         } else {

@@ -216,6 +216,11 @@
                         "  <div class=\"form-group\">".NL.
                         "    <textarea name=\"message\" rows=\"5\" placeholder=\"%s\" class=\"form-control mb-4\" required></textarea>".NL.
                         "  </div>".NL.
+                        "  <!-- Captcha -->".NL.
+                        "  <label class=\"mb-1\">%s</label>".NL.
+                        "  <div class=\"form-group\">".NL.
+                        "  <input type=\"number\" name=\"captcha\" min=\"0\" max=\"20\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
+                        "  </div>".NL.
                         "  <!-- Privacy -->".NL.
                         "  <div class=\"custom-control custom-checkbox mb-4\">".NL.
                         "    <input type=\"checkbox\" class=\"custom-control-input\" id=\"privacy\" required>".NL.
@@ -228,6 +233,8 @@
                         "Full name or organisation name*",
                         "Email address*",
                         "Message*",
+                        "What is 6+5?",
+                        "Captcha answer",
                         "I have read and agree to the",
                         "/privacy/",
                         "privacy policy",
@@ -481,6 +488,11 @@
                        "    <option value=\"0\">%s</option>".NL.
                        "    <option value=\"1\">%s</option>".NL.
                        "  </select>".NL.
+                       "  <!-- Captcha -->".NL.
+                       "  <label class=\"mb-1\">%s</label>".NL.
+                       "  <div class=\"form-group\">".NL.
+                       "  <input type=\"number\" name=\"captcha\" min=\"0\" max=\"20\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
+                       "  </div>".NL.
                        "  <!-- Privacy -->".NL.
                        "  <div class=\"custom-control custom-checkbox mb-4\">".NL.
                        "    <input type=\"checkbox\" class=\"custom-control-input\" id=\"privacy\" required>".NL.
@@ -506,6 +518,8 @@
                        "Choose option...",
                        "No updates please.",
                        "Please keep me updated.",
+                       "What is 6+5?",
+                       "Captcha answer",
                        "I have read and agree to the",
                        "/privacy/",
                        "privacy policy",

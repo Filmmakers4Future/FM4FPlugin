@@ -10,6 +10,39 @@
 
     return $result;
   }
+  
+  function getCaptcha() {
+      session_set_cookie_params(1800); 
+      ini_set('session.gc_maxlifetime', 1800);
+      session_start();
+      
+      $captcha_1 = rand(1,10);
+      $captcha_2 = rand(1,10);
+      
+      $_SESSION["captcha_number_1"] = openssl_encrypt($captcha_1, "AES-128-ECB", CAPTCHA_COOKIE_KEY);
+      $_SESSION["captcha_number_2"] = openssl_encrypt($captcha_2, "AES-128-ECB", CAPTCHA_COOKIE_KEY);
+      
+      return "What is " . $captcha_1 . " + " . $captcha_2 . "?";
+  }
+  
+  function checkCaptcha($answer) {
+    
+    session_start();
+    $captcha_1 = openssl_decrypt($_SESSION["captcha_number_1"], "AES-128-ECB", CAPTCHA_COOKIE_KEY);
+    $captcha_2 = openssl_decrypt($_SESSION["captcha_number_2"], "AES-128-ECB", CAPTCHA_COOKIE_KEY);
+    
+    session_unset();
+    session_destroy();
+    
+    $correctAnswer = $captcha_1 + $captcha_2;
+    
+    if ($correctAnswer == (int)$answer) {
+      return true;
+    } else {
+      return false;
+    }
+    
+  }
 
   // send contact mail
   function contact($info, &$error = null) {
@@ -33,7 +66,7 @@
 
         // check if the given parameters fulfil minimal requirements
         if ((0 < strlen($info["mail"])) && (0 < strlen($info["message"])) && (0 < strlen($info["name"]))) {
-            if ($info["captcha"] == "11" && strlen($info["mail_message"]) == 0) {
+            if (checkCaptcha($info["captcha"]) && strlen($info["mail_message"]) == 0) {
           // retrieve subject and recipient from subject parameter
           $recipient = null;
           $subject   = null;
@@ -751,7 +784,7 @@
         // check if the given parameters fulfil minimal requirements
         if ((0 < strlen($info["country"])) && (0 < strlen($info["job"])) && (0 < strlen($info["mail"])) &&
             (0 < strlen($info["name"]))) {
-            if ($info["captcha"] == "11" && strlen($info["mail_message"]) == 0) {
+            if (checkCaptcha($info["captcha"]) && strlen($info["mail_message"]) == 0) {
           // connect to the database
           if ($link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)) {
             try {

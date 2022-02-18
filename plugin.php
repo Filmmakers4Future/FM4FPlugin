@@ -42,6 +42,10 @@
     // HELPER FUNCTIONS
 
     protected static function configure() {
+      
+      // Key to encrypt the used numbers in the captcha
+      Plugins::preset("CAPTCHA_COOKIE_KEY", null);
+      
       // this is mail address where administrative mails will be sent to
       Plugins::preset("ADMIN_MAIL", "root@localhost");
 
@@ -108,6 +112,7 @@
       Plugins::preset("VIDEOS", null);
 
       // set fff-signup sourcecode uses standard defines so we have to convert them
+      static::define("CAPTCHA_COOKIE_KEY");
       static::define("ADMIN_MAIL");
       static::define("BASE_URL");
       static::define("MAILGUN_AUTH");
@@ -206,7 +211,6 @@
 
           }
         }
-
         $html .= tfhtml("  </select>".NL.
                         "  <!-- Name -->".NL.
                         "  <input type=\"text\" name=\"name\" maxlength=\"256\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
@@ -236,7 +240,7 @@
                         "Full name or organisation name*",
                         "Email address*",
                         "Message*",
-                        "What is 6+5?",
+                        getCaptcha(),
                         "Captcha answer",
                         "I have read and agree to the",
                         "/privacy/",
@@ -524,7 +528,7 @@
                        "Choose option...",
                        "No updates please.",
                        "Please keep me updated.",
-                       "What is 6+5?",
+                       getCaptcha(),
                        "Captcha answer",
                        "I have read and agree to the",
                        "/privacy/",

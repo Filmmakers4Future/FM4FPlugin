@@ -18,10 +18,11 @@
     if (check_form()) {
       if (is_array($info)) {
         //normalize texts
-        $info["mail"]    = strtolower(trim(get_element($info, "mail")));
-        $info["message"] = trim(get_element($info, "message"));
-        $info["name"]    = trim(get_element($info, "name"));
-        $info["captcha"] = trim(get_element($info, "captcha"));
+        $info["mail"]           = strtolower(trim(get_element($info, "mail")));
+        $info["message"]        = trim(get_element($info, "message"));
+        $info["name"]           = trim(get_element($info, "name"));
+        $info["captcha"]        = trim(get_element($info, "captcha"));
+        $info["mail_message"]   = trim(get_element($info, "mail_message"));
 
         // normalize subject
         if (is_numeric(get_element($info, "subject"))) {
@@ -32,7 +33,7 @@
 
         // check if the given parameters fulfil minimal requirements
         if ((0 < strlen($info["mail"])) && (0 < strlen($info["message"])) && (0 < strlen($info["name"]))) {
-            if ($info["captcha"] == "11") {
+            if ($info["captcha"] == "11" && strlen($info["mail_message"]) == 0) {
           // retrieve subject and recipient from subject parameter
           $recipient = null;
           $subject   = null;
@@ -66,7 +67,11 @@
           }
         } else {
             if (is_array($error)) {
-              $error[ERROR_MESSAGE] = "Wrong captcha code provided";
+                if (strlen($info["mail_message"]) > 0) {
+                    $error[ERROR_MESSAGE] = "Hidden spam honeypot input filled out.";
+                } else {
+                    $error[ERROR_MESSAGE] = "Wrong captcha code provided";
+                }
             }
           }
         } else {
@@ -720,6 +725,7 @@
         $info["website"]      = trim(get_element($info, "website"));
         $info["verify_hints"] = trim(get_element($info, "verify_hints"));
         $info["captcha"]      = trim(get_element($info, "captcha"));
+        $info["mail_message"] = trim(get_element($info, "mail_message"));
 
         // normalize iscompany
         if ("1" === get_element($info, "iscompany")) {
@@ -745,7 +751,7 @@
         // check if the given parameters fulfil minimal requirements
         if ((0 < strlen($info["country"])) && (0 < strlen($info["job"])) && (0 < strlen($info["mail"])) &&
             (0 < strlen($info["name"]))) {
-            if ($info["captcha"] == "11") {
+            if ($info["captcha"] == "11" && strlen($info["mail_message"]) == 0) {
           // connect to the database
           if ($link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)) {
             try {
@@ -878,7 +884,11 @@
           }
         } else {
             if (is_array($error)) {
-              $error[ERROR_MESSAGE] = "Wrong captcha code provided";
+                if (strlen($info["mail_message"]) > 0) {
+                    $error[ERROR_MESSAGE] = "Hidden spam honeypot input filled out.";
+                } else {
+                    $error[ERROR_MESSAGE] = "Wrong captcha code provided";
+                }
             }
           }
         } else {

@@ -221,6 +221,9 @@
                         "  <div class=\"form-group\">".NL.
                         "  <input type=\"number\" name=\"captcha\" min=\"0\" max=\"20\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
                         "  </div>".NL.
+                        // Hidden field (if filled out = spamm)
+                        // Captcha Part 2
+                        "  <p style=\"display:none;\"><textarea name=\"mail_message\" maxlength=\"2000\" rows=\"3\" tabindex=\"-1\" autocomplete=\"off\"></textarea></p>".NL.
                         "  <!-- Privacy -->".NL.
                         "  <div class=\"custom-control custom-checkbox mb-4\">".NL.
                         "    <input type=\"checkbox\" class=\"custom-control-input\" id=\"privacy\" required>".NL.
@@ -493,6 +496,9 @@
                        "  <div class=\"form-group\">".NL.
                        "  <input type=\"number\" name=\"captcha\" min=\"0\" max=\"20\" placeholder=\"%s\" class=\"form-control mb-4\" required>".NL.
                        "  </div>".NL.
+                       // Hidden field (if filled out = spamm)
+                       // Captcha Part 2
+                       "  <p style=\"display:none;\"><textarea name=\"mail_message\" maxlength=\"2000\" rows=\"3\" tabindex=\"-1\" autocomplete=\"off\"></textarea></p>".NL.
                        "  <!-- Privacy -->".NL.
                        "  <div class=\"custom-control custom-checkbox mb-4\">".NL.
                        "    <input type=\"checkbox\" class=\"custom-control-input\" id=\"privacy\" required>".NL.

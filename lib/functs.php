@@ -19,8 +19,8 @@
       $captcha_1 = rand(1,10);
       $captcha_2 = rand(1,10);
       
-      $_SESSION["captcha_number_1"] = openssl_encrypt($captcha_1, "AES-128-ECB", CAPTCHA_COOKIE_KEY);
-      $_SESSION["captcha_number_2"] = openssl_encrypt($captcha_2, "AES-128-ECB", CAPTCHA_COOKIE_KEY);
+      $_SESSION["captcha_number_1"] = $captcha_1;
+      $_SESSION["captcha_number_2"] = $captcha_2;
       
       return "What is " . $captcha_1 . " + " . $captcha_2 . "?";
   }
@@ -28,8 +28,8 @@
   function check_captcha($answer) {
     
     session_start();
-    $captcha_1 = openssl_decrypt($_SESSION["captcha_number_1"], "AES-128-ECB", CAPTCHA_COOKIE_KEY);
-    $captcha_2 = openssl_decrypt($_SESSION["captcha_number_2"], "AES-128-ECB", CAPTCHA_COOKIE_KEY);
+    $captcha_1 = $_SESSION["captcha_number_1"];
+    $captcha_2 = $_SESSION["captcha_number_2"];
     
     session_unset();
     session_destroy();

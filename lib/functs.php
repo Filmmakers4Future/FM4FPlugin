@@ -12,8 +12,8 @@
   }
   
   function getCaptcha() {
-      session_set_cookie_params(1800); 
-      ini_set('session.gc_maxlifetime', 1800);
+      session_set_cookie_params(3600); 
+      ini_set('session.gc_maxlifetime', 3600);
       session_start();
       
       $captcha_1 = rand(1,10);

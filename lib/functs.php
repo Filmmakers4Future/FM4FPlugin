@@ -101,9 +101,9 @@
         } else {
             if (is_array($error)) {
                 if (strlen($info["mail_message"]) > 0) {
-                    $error[ERROR_MESSAGE] = "Hidden spam honeypot input filled out.";
+                    $error[ERROR_MESSAGE] = "hidden honeypot input filled out";
                 } else {
-                    $error[ERROR_MESSAGE] = "Wrong captcha code provided";
+                    $error[ERROR_MESSAGE] = "wrong captcha code provided";
                 }
               
                 $error["spam"] = true;
@@ -131,10 +131,8 @@
       $error[ERROR_FUNCTION] = __FUNCTION__;
       $error["info"]         = $info;
       
-      if (isset($error["spam"])) {
-        if ($error["spam"] == true) {
-          $error["info"]["ip"] = $_SERVER['REMOTE_ADDR'];
-        }
+      if (get_element($error, "spam") == true) {
+          $error["info"]["source_ip"] = $_SERVER['REMOTE_ADDR'];
       }
       
       store_error($error);
@@ -928,16 +926,16 @@
           }
         } else {
             if (is_array($error)) {
-                $error[ERROR_MESSAGE] = "Name field contains a link - probably spam.";
+                $error[ERROR_MESSAGE] = "name field contains a link";
                 $error["spam"] = true;
             }
           }
         } else {
             if (is_array($error)) {
                 if (strlen($info["mail_message"]) > 0) {
-                    $error[ERROR_MESSAGE] = "Hidden spam honeypot input filled out.";
+                    $error[ERROR_MESSAGE] = "hidden honeypot input filled out";
                 } else {
-                    $error[ERROR_MESSAGE] = "Wrong captcha code provided";
+                    $error[ERROR_MESSAGE] = "wrong captcha code provided";
                 }
               $error["spam"] = true;
             }
@@ -963,10 +961,8 @@
       $error[ERROR_FUNCTION] = __FUNCTION__;
       $error["info"]         = $info;
       
-      if (isset($error["spam"])) {
-        if ($error["spam"] == true) {
-          $error["info"]["ip"] = $_SERVER['REMOTE_ADDR'];
-        }
+      if (get_element($error, "spam") == true) {
+        $error["info"]["source_ip"] = $_SERVER['REMOTE_ADDR'];
       }
       
       store_error($error);

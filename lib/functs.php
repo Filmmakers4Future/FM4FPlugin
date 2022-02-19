@@ -105,6 +105,9 @@
                 } else {
                     $error[ERROR_MESSAGE] = "Wrong captcha code provided";
                 }
+              
+                $error["spam"] = true;
+              
             }
           }
         } else {
@@ -127,6 +130,13 @@
     if ((!$result) && is_array($error)) {
       $error[ERROR_FUNCTION] = __FUNCTION__;
       $error["info"]         = $info;
+      
+      if (isset($error["spam"])) {
+        if ($error["spam"] == true) {
+          $error["info"]["ip"] = $_SERVER['REMOTE_ADDR'];
+        }
+      }
+      
       store_error($error);
     }
 
@@ -919,6 +929,7 @@
         } else {
             if (is_array($error)) {
                 $error[ERROR_MESSAGE] = "Name field contains a link - probably spam.";
+                $error["spam"] = true;
             }
           }
         } else {
@@ -928,6 +939,7 @@
                 } else {
                     $error[ERROR_MESSAGE] = "Wrong captcha code provided";
                 }
+              $error["spam"] = true;
             }
           }
         } else {
@@ -950,6 +962,13 @@
     if ((!$result) && is_array($error)) {
       $error[ERROR_FUNCTION] = __FUNCTION__;
       $error["info"]         = $info;
+      
+      if (isset($error["spam"])) {
+        if ($error["spam"] == true) {
+          $error["info"]["ip"] = $_SERVER['REMOTE_ADDR'];
+        }
+      }
+      
       store_error($error);
     }
 
